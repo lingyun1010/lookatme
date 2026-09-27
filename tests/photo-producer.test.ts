@@ -42,6 +42,9 @@ test('producer generates canonical center first and uses it for every direction'
   const portrait = await fixture(400, 500); const generated = await fixture(); const provider = new MockProvider(generated); const { instance } = producer(provider);
   const frames = await instance.produce({ image: portrait.data, style: 'cartoon@1' });
   assert.equal(provider.calls.length, 5); assert.notDeepEqual(provider.calls[0].reference.data, generated.data);
+  for (const call of provider.calls) {
+    assert.match(call.prompt, /fully transparent background/); assert.match(call.prompt, /no scenery/); assert.match(call.prompt, /no floor or background surface/); assert.match(call.prompt, /no cast or drop shadow/); assert.match(call.prompt, /clean alpha edges/);
+  }
   for (const call of provider.calls.slice(1)) assert.equal(call.reference, generated);
   assert.deepEqual(frames.directions.map(frame => [frame.key, frame.angle]), [['right', 0], ['down', 90], ['left', 180], ['up', 270]]);
   assert.equal(frames.metadata?.source?.type, 'photo-ai'); assert.equal(frames.metadata?.source?.frameSetId, 'set-1');

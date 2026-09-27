@@ -14,7 +14,7 @@ export class OpenAIImageGenerationProvider implements ImageGenerationProvider {
   }
   async generate(request: ImageGenerationRequest): Promise<GeneratedImage> {
     const image = await toFile(request.reference.data, 'reference.png', { type: request.reference.mimeType });
-    const response = await this.client.images.edit({ model: this.model, image, prompt: request.prompt, size: '1024x1024', quality: this.quality, output_format: 'png'});
+    const response = await this.client.images.edit({ model: this.model, image, prompt: request.prompt, size: '1024x1024', quality: this.quality, background: 'transparent', output_format: 'png' });
     const encoded = response.data?.[0]?.b64_json;
     if (!encoded) throw new Error('OpenAI returned no generated image data.');
     return { data: Buffer.from(encoded, 'base64'), mimeType: 'image/png' };
